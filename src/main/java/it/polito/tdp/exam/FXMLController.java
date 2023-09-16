@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.exam.model.Model;
+import it.polito.tdp.exam.model.Successore;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -35,10 +36,10 @@ public class FXMLController {
     private Button btnSimula; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbAnno"
-    private ComboBox<?> cmbAnno; // Value injected by FXMLLoader
+    private ComboBox<Integer> cmbAnno; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbSquadra"
-    private ComboBox<?> cmbSquadra; // Value injected by FXMLLoader
+    private ComboBox<String> cmbSquadra; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
@@ -48,12 +49,30 @@ public class FXMLController {
 
     @FXML
     void handleCreaGrafo(ActionEvent event) {
-
+    	this.txtResult.clear();
+    	String input=this.cmbSquadra.getValue();
+    	if(input==null) {
+    		this.txtResult.setText("Selezionare una Squadra!");
+    		return;
+    	}
+    	this.model.buildGraph(input);
+    	this.txtResult.setText("Grafo creato!\n");
+    	this.txtResult.appendText("V: "+this.model.getVsize()+"\n");
+    	this.txtResult.appendText("A: "+this.model.getEsize()+"\n");
+    	this.cmbAnno.getItems().setAll(this.model.getNodes());
     }
-
+    
     @FXML
     void handleDettagli(ActionEvent event) {
-
+    	this.txtResult.clear();
+    	Integer input=this.cmbAnno.getValue();
+    	if(input==null) {
+    		this.txtResult.setText("Selezionare un anno!");
+    		return;
+    	}
+    	for(Successore s:this.model.getSuccessorEdges(input)) {
+    		this.txtResult.appendText(input+"<--->"+s.getE()+" peso= : "+s.getPeso()+"\n");
+    	}
     }
 
     @FXML
@@ -75,6 +94,7 @@ public class FXMLController {
 
     public void setModel(Model model) {
         this.model = model;
+        this.cmbSquadra.getItems().setAll(this.model.getTeams());
     }
 
 }
